@@ -77,7 +77,37 @@ module.exports = __webpack_require__(1);
 "use strict";
 
 
-var _gameOfLife = __webpack_require__(2);
+var _Generation = __webpack_require__(2);
+
+var _Generation2 = _interopRequireDefault(_Generation);
+
+var _LifeCoordinate = __webpack_require__(3);
+
+var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Game of life rules:
+    1. If a live cell in the grid is bordered by fewer than 2 neighbors, it dies in next generation (underpopulation)
+    2. If a live cell in the grid is bordered by 2 or 3 neighbors, it lives to the next generation
+    3. If a live cell is bordered by more than 3 neighbors, it dies (overpopulation)
+    4. If a dead cell is bordered by exactly 3 neighbors, it becomes a live cell (reproduction)
+
+    Initial pattern constitutes the “seed” of the system. Generation next is created by applying the above rules simultaneously to every cell in the seed to come up with the next generation.
+    In other words, the order of calculation of cells for a new generation cannot effect whether a cell lives or dies for the gen++ calculation.
+
+    My initial thoughts for how to model this game:
+
+    The grid can be modeled like a coordinate system, each square representing a single coordinate.
+    Class Coordinate(x, y, isAlive) <-- I think livingNeighbors will be calculated on demand.
+
+    Need some method for returning the list of valid neighbors for a coordinate. My coordinate package does this already!
+
+    Shouldn't pre-compute all possible generations... we should use some sort of generator-like functionality
+    that we can request the .next() generation from. Generator can store the current generation, produce the next one,
+    and overwrite the previous one.
+ */
 
 var generation = void 0;
 
@@ -97,7 +127,7 @@ window.generateGrid = function () {
     var n = document.getElementById('grid-size').value;
     if (n && !isNaN(parseInt(n))) {
         resetView();
-        generation = new _gameOfLife.Generation(n);
+        generation = new _Generation2.default(n);
         var tbody = document.createElement('tbody');
         for (var rowNum = 0; rowNum < n; rowNum++) {
             var row = generateRow(n, rowNum);
@@ -181,51 +211,15 @@ window.stop = function () {
 "use strict";
 
 
-var _surroundingCoordinates = __webpack_require__(3);
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-var _surroundingCoordinates2 = _interopRequireDefault(_surroundingCoordinates);
+var _LifeCoordinate = __webpack_require__(3);
+
+var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// generic coordinate class with x, y fields and getSurroundingCoordinates method on prototype
-
-/**
- * LifeCoordinate class
- * @param {number} x
- * @param {number} y
- * @param {boolean} isAlive
- */
-function LifeCoordinate(x, y, isAlive) {
-    _surroundingCoordinates2.default.call(this, x, y);
-    this.isAlive = isAlive;
-} /**
-   * Game of life rules:
-      1. If a live cell in the grid is bordered by fewer than 2 neighbors, it dies in next generation (underpopulation)
-      2. If a live cell in the grid is bordered by 2 or 3 neighbors, it lives to the next generation
-      3. If a live cell is bordered by more than 3 neighbors, it dies (overpopulation)
-      4. If a dead cell is bordered by exactly 3 neighbors, it becomes a live cell (reproduction)
-  
-      Initial pattern constitutes the “seed” of the system. Generation next is created by applying the above rules simultaneously to every cell in the seed to come up with the next generation.
-      In other words, the order of calculation of cells for a new generation cannot effect whether a cell lives or dies for the gen++ calculation.
-  
-      My initial thoughts for how to model this game:
-  
-      The grid can be modeled like a coordinate system, each square representing a single coordinate.
-      Class Coordinate(x, y, isAlive) <-- I think livingNeighbors will be calculated on demand.
-  
-      Need some method for returning the list of valid neighbors for a coordinate. My coordinate package does this already!
-  
-      Shouldn't pre-compute all possible generations... we should use some sort of generator-like functionality
-      that we can request the .next() generation from. Generator can store the current generation, produce the next one,
-      and overwrite the previous one.
-   */
-
-LifeCoordinate.prototype = Object.create(_surroundingCoordinates2.default.prototype);
-LifeCoordinate.prototype.constructor = LifeCoordinate;
-LifeCoordinate.prototype.toString = function () {
-    var display = this.isAlive ? 'TRUE' : '-';
-    return '' + display;
-};
 
 /**
  * GENERATION CLASS
@@ -239,7 +233,7 @@ Generation.prototype.newDeadState = function (n) {
     for (var y = 0; y < n; y++) {
         var row = [];
         for (var x = 0; x < n; x++) {
-            row.push(new LifeCoordinate(x, y, false)); // all squares start as dead
+            row.push(new _LifeCoordinate2.default(x, y, false)); // all squares start as dead
         }
         newDeadState.push(row);
     }
@@ -307,13 +301,48 @@ Generation.prototype.toggleAlive = function (x, y) {
     return this.state[y][x].isAlive;
 };
 
-module.exports = {
-    Generation: Generation,
-    LifeCoordinate: LifeCoordinate
-};
+exports.default = Generation;
 
 /***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _surroundingCoordinates = __webpack_require__(4);
+
+var _surroundingCoordinates2 = _interopRequireDefault(_surroundingCoordinates);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// generic coordinate class with x, y fields and getSurroundingCoordinates method on prototype
+
+/**
+ * LifeCoordinate class
+ * @param {number} x
+ * @param {number} y
+ * @param {boolean} isAlive
+ */
+function LifeCoordinate(x, y, isAlive) {
+    _surroundingCoordinates2.default.call(this, x, y);
+    this.isAlive = isAlive;
+}
+LifeCoordinate.prototype = Object.create(_surroundingCoordinates2.default.prototype);
+LifeCoordinate.prototype.constructor = LifeCoordinate;
+LifeCoordinate.prototype.toString = function () {
+    var display = this.isAlive ? 'TRUE' : '-';
+    return '' + display;
+};
+
+exports.default = LifeCoordinate;
+
+/***/ }),
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
