@@ -1,9 +1,9 @@
 const webpack = require('webpack');
 
 module.exports = {
-  entry: ["./main.js"],
+  entry: ["./assets/main.js"],
   output: {
-    filename: "./bundle.js",
+    filename: "./assets/bundle.js",
   },
   module: {
     rules: [
