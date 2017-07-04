@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Game of Life Simulation</title>
+        <link rel="stylesheet" href="./life.css"></link>
+    </head>
+    <body>
+        <h2>That's life bro!</h2>
+        <h2 id="stable" class="hidden">STABILIZED!</h2>
+        <input id="grid-size" type="text" placeholder="Enter the size of your grid"></input>
+        <button onClick="generateGrid()">click to create grid</button>
+        <table id="grid" class="centered">
+        </table>
+        <button id="nextbtn" onClick="nextGeneration()" class="hidden">Increment One Generation</button>
+        <button id="go" class="hidden" onClick="autoRun()">Auto Play</button>
+        <button id="stop" class="hidden" onClick="stop()">Stop</button>
+        <script src="./bundle.js"></script>
+    </body>
+</html>

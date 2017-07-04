@@ -1,0 +1,29 @@
+.centered {
+    margin: 0px auto;
+}
+
+.hidden {
+    display: none;
+}
+
+.cell {
+    width: 35px;
+    height: 35px;
+}
+
+.alive {
+    background-color: peachpuff;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, td {
+    border: 1px solid black;
+}
+
+button {
+  display: block;
+  margin: auto;
+}
