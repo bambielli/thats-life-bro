@@ -40,6 +40,7 @@ Generation.prototype.prettyPrint = function() {
     console.table(stringifiedState);
 }
 
+// this is the generator-like function that calculates the next state of the world
 Generation.prototype.next = function () {
     // get a fresh dead copy of the world
     const nextGen = this.newDeadState(this.state.length);

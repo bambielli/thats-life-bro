@@ -1,3 +1,21 @@
+#controls {
+    border: 1px solid black;
+    margin-top: 10px;
+    padding: 10px;
+    margin-right: 8px;
+}
+
+#rules {
+    vertical-align: bottom;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
 .centered {
     margin: 0px auto;
     text-align: center;
@@ -16,22 +34,34 @@
     background-color: peachpuff;
 }
 
-.flex {
-  display: flex;
-}
-
 .sidebar {
     width: 25%;
+    height: 100%;
+    position: fixed;
+    border-right: 1px solid black;
+    overflow-y: scroll;
+    overflow-x: scroll;
 }
 
 .grid {
     width: 75%;
+    margin-left: 27%;
 }
 
-#controls {
-    border: 1px solid black;
-    margin-top: 20px;
-    padding: 10px;
+h2.centered {
+    padding: .80em 0em;
+}
+
+button.centered {
+    margin-top: 10px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a {
+ text-decoration: none;
 }
 
 table {
@@ -51,6 +81,11 @@ input {
     margin-bottom: 10px;
 }
 
-h2.centered {
-    margin-bottom: 10px;
+li {
+    padding-bottom: 8px;
 }
+
+body {
+    margin: 0px 8px 8px 8px;
+}
+

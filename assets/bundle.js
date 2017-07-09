@@ -60,28 +60,66 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(1);
+"use strict";
 
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _surroundingCoordinates = __webpack_require__(4);
+
+var _surroundingCoordinates2 = _interopRequireDefault(_surroundingCoordinates);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// generic coordinate class with x, y fields and getSurroundingCoordinates method on prototype
+
+/**
+ * LifeCoordinate class
+ * @param {number} x
+ * @param {number} y
+ * @param {boolean} isAlive
+ */
+function LifeCoordinate(x, y, isAlive) {
+    _surroundingCoordinates2.default.call(this, x, y);
+    this.isAlive = isAlive;
+}
+LifeCoordinate.prototype = Object.create(_surroundingCoordinates2.default.prototype);
+LifeCoordinate.prototype.constructor = LifeCoordinate;
+LifeCoordinate.prototype.toString = function () {
+    var display = this.isAlive ? 'TRUE' : '-';
+    return '' + display;
+};
+
+exports.default = LifeCoordinate;
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+module.exports = __webpack_require__(2);
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
-var _Generation = __webpack_require__(6);
+var _Generation = __webpack_require__(3);
 
 var _Generation2 = _interopRequireDefault(_Generation);
 
-var _LifeCoordinate = __webpack_require__(7);
+var _LifeCoordinate = __webpack_require__(0);
 
 var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
 
@@ -109,7 +147,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
     and overwrite the previous one.
  */
 
-var generation = void 0;
+var generation = void 0; // used by window.generateGrid to store the generation object
+var intervalId = void 0; // used in window.nextGeneration to stop the auto-play if necessary
 
 function resetView() {
     var table = document.getElementById('grid');
@@ -124,10 +163,62 @@ function resetView() {
     document.querySelector('.grid').classList.remove('hidden');
 }
 
+// validates that input is a number, and is between 1 and 30
+function isValidInput(n) {
+    return n && !isNaN(parseInt(n)) && parseInt(n) > 0 && parseInt(n) <= 30;
+}
+
+// parses the x-y id format in to an array with two parts (first is col second is row)
+function parseId(str) {
+    return str.split('-').map(function (item) {
+        return parseInt(item);
+    });
+}
+
+function generateCell(colNum, rowNum) {
+    var col = document.createElement('td');
+
+    col.classList.add('cell');
+    col.setAttribute('id', colNum + '-' + rowNum);
+
+    // attach a toggle callback
+    col.onclick = function () {
+        var cell = parseId(this.id);
+        var alive = generation.toggleAlive(cell[0], cell[1]);
+        alive ? this.classList.add('alive') : this.classList.remove('alive');
+    };
+    return col;
+}
+
+// generates nxn matrix of cells
+function generateRow(numCols, rowNum) {
+    var tableRow = document.createElement('tr');
+    for (var colNum = 0; colNum < numCols; colNum++) {
+        tableRow.appendChild(generateCell(colNum, rowNum));
+    }
+    return tableRow;
+}
+
+// called after nextGeneration is generated, to update the dom to match new state of the world.
+// more efficient would be if next() returned only the cells that needed to update.
+function updateGrid(diff) {
+    // grab the table, iterate through coords, update table with coord stuff
+    var table = document.getElementById('grid');
+    diff.forEach(function (coord) {
+        var cell = document.getElementById(coord.x + '-' + coord.y);
+        coord.isAlive ? cell.classList.add('alive') : cell.classList.remove('alive');
+    });
+}
+
+// It is necessary to attach the following to window, because webpack 2 puts all javascript in a closure.
+// Since I want to reference these functions directly from my HTML, I need to attach them to window.
+// Alternatively, I could select the elements I want these to apply to, and attach callbacks programatically here.
+// That method wouldn't expose these methods to window, which might be better / safer...
+
 window.generateGrid = function () {
     var table = document.getElementById('grid');
     var n = document.getElementById('grid-size').value;
-    if (n && !isNaN(parseInt(n))) {
+    if (isValidInput(n)) {
         resetView();
         generation = new _Generation2.default(n);
         var tbody = document.createElement('tbody');
@@ -138,32 +229,6 @@ window.generateGrid = function () {
         table.appendChild(tbody);
     }
 };
-
-function parseId(str) {
-    return str.split('-').map(function (item) {
-        return parseInt(item);
-    });
-}
-
-function generateCell() {}
-
-// generates nxn matrix of columns
-function generateRow(numCols, rowNum) {
-    var tableRow = document.createElement('tr');
-    for (var colNum = 0; colNum < numCols; colNum++) {
-        var col = document.createElement('td');
-        col.classList.add('cell');
-        col.setAttribute('id', colNum + '-' + rowNum);
-        // attach a toggle callback
-        col.onclick = function () {
-            var cell = parseId(this.id);
-            var alive = generation.toggleAlive(cell[0], cell[1]);
-            alive ? this.classList.add('alive') : this.classList.remove('alive');
-        };
-        tableRow.appendChild(col);
-    }
-    return tableRow;
-}
 
 window.nextGeneration = function () {
     var diff = generation.next();
@@ -178,19 +243,7 @@ window.nextGeneration = function () {
     }
 };
 
-// called after nextGeneration is generated, to update the dom to match new state of the world.
-// more efficient would be if next() returned only the cells that needed to update.
-function updateGrid(diff) {
-    // grab the table, iterate through coords, update table with coord stuff
-    var table = document.getElementById('grid');
-    diff.forEach(function (coord) {
-        var cell = document.getElementById(coord.x + '-' + coord.y);
-        coord.isAlive ? cell.classList.add('alive') : cell.classList.remove('alive');
-    });
-}
-
-var intervalId = void 0;
-
+// functions to autoRun the simulation.
 window.autoRun = function () {
     intervalId = setInterval(function () {
         window.nextGeneration();
@@ -209,7 +262,6 @@ window.stop = function () {
 };
 
 /***/ }),
-/* 2 */,
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -219,49 +271,8 @@ window.stop = function () {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-/**
- * @function Coordinate - a Coordinate class, representing the x,y coordinates of a square in a 2d matrix
- * @param {integer} x
- * @param {integer} y
- * @return {Array<Coordinate>}
- */
-function Coordinate(x, y) {
-    this.x = x;
-    this.y = y;
-}
 
-/**
- * @function findSurroundingCoordinates - returns array of valid coordinates surrounding the given coordinate in a square matrix
- * @param {integer} matrixSize - size of your square matrix
- * @return {Array<Coordinate>}
- */
-Coordinate.prototype.findSurroundingCoordinates = function (matrixSize) {
-    var surroundingCoordinates = [new Coordinate(this.x - 1, this.y - 1), new Coordinate(this.x, this.y - 1), new Coordinate(this.x + 1, this.y - 1), new Coordinate(this.x - 1, this.y), new Coordinate(this.x + 1, this.y), new Coordinate(this.x - 1, this.y + 1), new Coordinate(this.x, this.y + 1), new Coordinate(this.x + 1, this.y + 1)];
-
-    // filters out coordinates that are not valid (i.e. outside the bounds of the matrix)
-    return surroundingCoordinates.filter(function (item) {
-        if (item.x >= 0 && item.y >= 0 && item.x < matrixSize && item.y < matrixSize) {
-            return item;
-        }
-    });
-};
-
-exports.default = Coordinate;
-
-/***/ }),
-/* 4 */,
-/* 5 */,
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _LifeCoordinate = __webpack_require__(7);
+var _LifeCoordinate = __webpack_require__(0);
 
 var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
 
@@ -309,6 +320,7 @@ Generation.prototype.prettyPrint = function () {
     console.table(stringifiedState);
 };
 
+// this is the generator-like function that calculates the next state of the world
 Generation.prototype.next = function () {
     var _this2 = this;
 
@@ -350,7 +362,7 @@ Generation.prototype.toggleAlive = function (x, y) {
 exports.default = Generation;
 
 /***/ }),
-/* 7 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -359,33 +371,34 @@ exports.default = Generation;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-
-var _surroundingCoordinates = __webpack_require__(3);
-
-var _surroundingCoordinates2 = _interopRequireDefault(_surroundingCoordinates);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// generic coordinate class with x, y fields and getSurroundingCoordinates method on prototype
+/**
+ * @function Coordinate - a Coordinate class, representing the x,y coordinates of a square in a 2d matrix
+ * @param {integer} x
+ * @param {integer} y
+ * @return {Array<Coordinate>}
+ */
+function Coordinate(x, y) {
+    this.x = x;
+    this.y = y;
+}
 
 /**
- * LifeCoordinate class
- * @param {number} x
- * @param {number} y
- * @param {boolean} isAlive
+ * @function findSurroundingCoordinates - returns array of valid coordinates surrounding the given coordinate in a square matrix
+ * @param {integer} matrixSize - size of your square matrix
+ * @return {Array<Coordinate>}
  */
-function LifeCoordinate(x, y, isAlive) {
-    _surroundingCoordinates2.default.call(this, x, y);
-    this.isAlive = isAlive;
-}
-LifeCoordinate.prototype = Object.create(_surroundingCoordinates2.default.prototype);
-LifeCoordinate.prototype.constructor = LifeCoordinate;
-LifeCoordinate.prototype.toString = function () {
-    var display = this.isAlive ? 'TRUE' : '-';
-    return '' + display;
+Coordinate.prototype.findSurroundingCoordinates = function (matrixSize) {
+    var surroundingCoordinates = [new Coordinate(this.x - 1, this.y - 1), new Coordinate(this.x, this.y - 1), new Coordinate(this.x + 1, this.y - 1), new Coordinate(this.x - 1, this.y), new Coordinate(this.x + 1, this.y), new Coordinate(this.x - 1, this.y + 1), new Coordinate(this.x, this.y + 1), new Coordinate(this.x + 1, this.y + 1)];
+
+    // filters out coordinates that are not valid (i.e. outside the bounds of the matrix)
+    return surroundingCoordinates.filter(function (item) {
+        if (item.x >= 0 && item.y >= 0 && item.x < matrixSize && item.y < matrixSize) {
+            return item;
+        }
+    });
 };
 
-exports.default = LifeCoordinate;
+exports.default = Coordinate;
 
 /***/ })
 /******/ ]);

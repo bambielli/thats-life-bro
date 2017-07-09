@@ -5,25 +5,39 @@
         <link rel="stylesheet" href="./assets/life.css"></link>
     </head>
     <body>
-        <div class="flex">
-            <div class="sidebar">
-                <h2>That's life, bro!</h2>
-                <h2 id="stable" class="hidden">STABILIZED!</h2>
+        <div class="sidebar">
+            <div class="flex">
                 <div>
-                    <label for="grid-size">Input the size of your grid</label>
-                    <input id="grid-size" type="text"></input>
-                    <button onClick="generateGrid()">click to create grid</button>
+                    <h2><a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" target="_blank">That's life, bro!</a></h2>
+                    <div>
+                        <label for="grid-size">Input a number (between 1 and 30):</label>
+                        <input id="grid-size" type="text"></input>
+                        <button onClick="generateGrid()">click to create grid</button>
+                    </div>
+                    <div id="controls" class="hidden">
+                        <span for="nextbtn">Generation Controls:</span>
+                        <button id="nextbtn" class="centered" onClick="nextGeneration()">Increment One Generation</button>
+                        <button id="go" class="centered" onClick="autoRun()">Auto Play</button>
+                        <button id="stop" class="centered hidden" onClick="stop()">Stop</button>
+                    </div>
+                    <h2 id="stable" class="hidden">STABILIZED!</h2>
                 </div>
-                <div id="controls" class="hidden">
-                    <button id="nextbtn" class="centered" onClick="nextGeneration()">Increment One Generation</button>
-                    <button id="go" class="centered" onClick="autoRun()">Auto Play</button>
-                    <button id="stop" class="centered hidden" onClick="stop()">Stop</button>
+                <div>
+                    <h3>Rules:</h3>
+                    <ol>
+                        <li><strong>underpopulation</strong> - Any live cell with fewer than two live neighbors dies</li>
+                        <li><strong>overpopulation</strong> - Any live cell with more than three live neighbors dies</li>
+                        <li><strong>reproduction</strong> - Any dead cell with exactly three live neighbors becomes a live cell</li>
+                        <li><strong>stabilization</strong> - Any live cell with two or three live neighbors lives on to the next generation</li>
+
+                    </ol>
                 </div>
             </div>
-            <div class="grid hidden">
-                <h2 class="centered">Click on cells to give them LIFE!</h2>
-                <table id="grid" class="centered"></table>
-            </div>
+        </div>
+
+        <div class="grid hidden">
+            <h2 class="centered">Click on cells to give them LIFE!</h2>
+            <table id="grid" class="centered"></table>
         </div>
         <script src="./assets/bundle.js"></script>
     </body>

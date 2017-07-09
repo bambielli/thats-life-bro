@@ -23,7 +23,8 @@
 import Generation from './classes/Generation';
 import LifeCoordinate from './classes/LifeCoordinate';
 
-let generation;
+let generation; // used by window.generateGrid to store the generation object
+let intervalId; // used in window.nextGeneration to stop the auto-play if necessary
 
 function resetView() {
     const table = document.getElementById('grid');
@@ -39,10 +40,60 @@ function resetView() {
 
 }
 
+// validates that input is a number, and is between 1 and 30
+function isValidInput(n) {
+    return n && !isNaN(parseInt(n)) && parseInt(n) > 0 && parseInt(n) <= 30
+}
+
+// parses the x-y id format in to an array with two parts (first is col second is row)
+function parseId(str) {
+    return str.split('-').map((item) => parseInt(item));
+}
+
+function generateCell(colNum, rowNum) {
+    const col = document.createElement('td');
+
+    col.classList.add('cell');
+    col.setAttribute('id', `${colNum}-${rowNum}`);
+
+    // attach a toggle callback
+    col.onclick = function() {
+        const cell = parseId(this.id);
+        const alive = generation.toggleAlive(cell[0], cell[1]);
+        alive ? this.classList.add('alive') : this.classList.remove('alive');
+    }
+    return col;
+}
+
+// generates nxn matrix of cells
+function generateRow (numCols, rowNum) {
+    const tableRow = document.createElement('tr')
+    for (let colNum = 0; colNum < numCols; colNum++) {
+        tableRow.appendChild(generateCell(colNum, rowNum));
+    }
+    return tableRow;
+}
+
+// called after nextGeneration is generated, to update the dom to match new state of the world.
+// more efficient would be if next() returned only the cells that needed to update.
+function updateGrid(diff) {
+    // grab the table, iterate through coords, update table with coord stuff
+    const table = document.getElementById('grid');
+    diff.forEach((coord) => {
+        const cell = document.getElementById(`${coord.x}-${coord.y}`);
+        coord.isAlive ? cell.classList.add('alive') : cell.classList.remove('alive');
+    })
+}
+
+// It is necessary to attach the following to window, because webpack 2 puts all javascript in a closure.
+// Since I want to reference these functions directly from my HTML, I need to attach them to window.
+// Alternatively, I could select the elements I want these to apply to, and attach callbacks programatically here.
+// That method wouldn't expose these methods to window, which might be better / safer...
+
 window.generateGrid = function() {
     const table = document.getElementById('grid');
     const n = document.getElementById('grid-size').value;
-    if (n && !isNaN(parseInt(n))) {
+    if (isValidInput(n)) {
         resetView();
         generation = new Generation(n);
         const tbody = document.createElement('tbody');
@@ -52,32 +103,6 @@ window.generateGrid = function() {
         }
         table.appendChild(tbody);
     }
-}
-
-function parseId(str) {
-    return str.split('-').map((item) => parseInt(item));
-}
-
-function generateCell() {
-
-}
-
-// generates nxn matrix of columns
-function generateRow (numCols, rowNum) {
-    const tableRow = document.createElement('tr')
-    for (let colNum = 0; colNum < numCols; colNum++) {
-        const col = document.createElement('td');
-        col.classList.add('cell');
-        col.setAttribute('id', `${colNum}-${rowNum}`);
-        // attach a toggle callback
-        col.onclick = function() {
-            const cell = parseId(this.id);
-            const alive = generation.toggleAlive(cell[0], cell[1]);
-            alive ? this.classList.add('alive') : this.classList.remove('alive');
-        }
-        tableRow.appendChild(col);
-    }
-    return tableRow;
 }
 
 window.nextGeneration = function() {
@@ -93,19 +118,7 @@ window.nextGeneration = function() {
     }
 }
 
-// called after nextGeneration is generated, to update the dom to match new state of the world.
-// more efficient would be if next() returned only the cells that needed to update.
-function updateGrid(diff) {
-    // grab the table, iterate through coords, update table with coord stuff
-    const table = document.getElementById('grid');
-    diff.forEach((coord) => {
-        const cell = document.getElementById(`${coord.x}-${coord.y}`);
-        coord.isAlive ? cell.classList.add('alive') : cell.classList.remove('alive');
-    })
-}
-
-let intervalId;
-
+// functions to autoRun the simulation.
 window.autoRun = function () {
     intervalId = setInterval(function() {
        window.nextGeneration();
