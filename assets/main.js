@@ -33,7 +33,9 @@ function resetView() {
     }
     document.getElementById('stable').classList.add('hidden');
     document.getElementById('nextbtn').classList.remove('hidden');
-    document.getElementById('go').classList.remove('hidden')
+    document.getElementById('go').classList.remove('hidden');
+    document.getElementById('controls').classList.remove('hidden');
+    document.querySelector('.grid').classList.remove('hidden');
 
 }
 
@@ -56,11 +58,15 @@ function parseId(str) {
     return str.split('-').map((item) => parseInt(item));
 }
 
+function generateCell() {
+
+}
+
 // generates nxn matrix of columns
 function generateRow (numCols, rowNum) {
     const tableRow = document.createElement('tr')
     for (let colNum = 0; colNum < numCols; colNum++) {
-        const col = document.createElement('td')
+        const col = document.createElement('td');
         col.classList.add('cell');
         col.setAttribute('id', `${colNum}-${rowNum}`);
         // attach a toggle callback

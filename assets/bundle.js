@@ -77,11 +77,11 @@ module.exports = __webpack_require__(1);
 "use strict";
 
 
-var _Generation = __webpack_require__(2);
+var _Generation = __webpack_require__(6);
 
 var _Generation2 = _interopRequireDefault(_Generation);
 
-var _LifeCoordinate = __webpack_require__(3);
+var _LifeCoordinate = __webpack_require__(7);
 
 var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
 
@@ -120,6 +120,8 @@ function resetView() {
     document.getElementById('stable').classList.add('hidden');
     document.getElementById('nextbtn').classList.remove('hidden');
     document.getElementById('go').classList.remove('hidden');
+    document.getElementById('controls').classList.remove('hidden');
+    document.querySelector('.grid').classList.remove('hidden');
 }
 
 window.generateGrid = function () {
@@ -142,6 +144,8 @@ function parseId(str) {
         return parseInt(item);
     });
 }
+
+function generateCell() {}
 
 // generates nxn matrix of columns
 function generateRow(numCols, rowNum) {
@@ -205,7 +209,49 @@ window.stop = function () {
 };
 
 /***/ }),
-/* 2 */
+/* 2 */,
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+/**
+ * @function Coordinate - a Coordinate class, representing the x,y coordinates of a square in a 2d matrix
+ * @param {integer} x
+ * @param {integer} y
+ * @return {Array<Coordinate>}
+ */
+function Coordinate(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+/**
+ * @function findSurroundingCoordinates - returns array of valid coordinates surrounding the given coordinate in a square matrix
+ * @param {integer} matrixSize - size of your square matrix
+ * @return {Array<Coordinate>}
+ */
+Coordinate.prototype.findSurroundingCoordinates = function (matrixSize) {
+    var surroundingCoordinates = [new Coordinate(this.x - 1, this.y - 1), new Coordinate(this.x, this.y - 1), new Coordinate(this.x + 1, this.y - 1), new Coordinate(this.x - 1, this.y), new Coordinate(this.x + 1, this.y), new Coordinate(this.x - 1, this.y + 1), new Coordinate(this.x, this.y + 1), new Coordinate(this.x + 1, this.y + 1)];
+
+    // filters out coordinates that are not valid (i.e. outside the bounds of the matrix)
+    return surroundingCoordinates.filter(function (item) {
+        if (item.x >= 0 && item.y >= 0 && item.x < matrixSize && item.y < matrixSize) {
+            return item;
+        }
+    });
+};
+
+exports.default = Coordinate;
+
+/***/ }),
+/* 4 */,
+/* 5 */,
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -215,7 +261,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _LifeCoordinate = __webpack_require__(3);
+var _LifeCoordinate = __webpack_require__(7);
 
 var _LifeCoordinate2 = _interopRequireDefault(_LifeCoordinate);
 
@@ -304,7 +350,7 @@ Generation.prototype.toggleAlive = function (x, y) {
 exports.default = Generation;
 
 /***/ }),
-/* 3 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -314,7 +360,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _surroundingCoordinates = __webpack_require__(4);
+var _surroundingCoordinates = __webpack_require__(3);
 
 var _surroundingCoordinates2 = _interopRequireDefault(_surroundingCoordinates);
 
@@ -340,45 +386,6 @@ LifeCoordinate.prototype.toString = function () {
 };
 
 exports.default = LifeCoordinate;
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-/**
- * @function Coordinate - a Coordinate class, representing the x,y coordinates of a square in a 2d matrix
- * @param {integer} x
- * @param {integer} y
- * @return {Array<Coordinate>}
- */
-function Coordinate(x, y) {
-    this.x = x;
-    this.y = y;
-}
-
-/**
- * @function findSurroundingCoordinates - returns array of valid coordinates surrounding the given coordinate in a square matrix
- * @param {integer} matrixSize - size of your square matrix
- * @return {Array<Coordinate>}
- */
-Coordinate.prototype.findSurroundingCoordinates = function (matrixSize) {
-    var surroundingCoordinates = [new Coordinate(this.x - 1, this.y - 1), new Coordinate(this.x, this.y - 1), new Coordinate(this.x + 1, this.y - 1), new Coordinate(this.x - 1, this.y), new Coordinate(this.x + 1, this.y), new Coordinate(this.x - 1, this.y + 1), new Coordinate(this.x, this.y + 1), new Coordinate(this.x + 1, this.y + 1)];
-
-    // filters out coordinates that are not valid (i.e. outside the bounds of the matrix)
-    return surroundingCoordinates.filter(function (item) {
-        if (item.x >= 0 && item.y >= 0 && item.x < matrixSize && item.y < matrixSize) {
-            return item;
-        }
-    });
-};
-
-exports.default = Coordinate;
 
 /***/ })
 /******/ ]);

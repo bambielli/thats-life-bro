@@ -1,5 +1,6 @@
 .centered {
     margin: 0px auto;
+    text-align: center;
 }
 
 .hidden {
@@ -7,12 +8,30 @@
 }
 
 .cell {
-    width: 35px;
-    height: 35px;
+    width: 25px;
+    height: 25px;
 }
 
-.alive {
+.cell.alive{
     background-color: peachpuff;
+}
+
+.flex {
+  display: flex;
+}
+
+.sidebar {
+    width: 25%;
+}
+
+.grid {
+    width: 75%;
+}
+
+#controls {
+    border: 1px solid black;
+    margin-top: 20px;
+    padding: 10px;
 }
 
 table {
@@ -25,5 +44,13 @@ table, td {
 
 button {
   display: block;
-  margin: auto;
+}
+
+input {
+    width: 40px;
+    margin-bottom: 10px;
+}
+
+h2.centered {
+    margin-bottom: 10px;
 }
