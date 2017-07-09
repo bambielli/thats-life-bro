@@ -42,7 +42,7 @@ function resetView() {
 
 // validates that input is a number, and is between 1 and 30
 function isValidInput(n) {
-    return n && !isNaN(parseInt(n)) && parseInt(n) > 0 && parseInt(n) <= 30
+    return n && !isNaN(parseInt(n)) && parseInt(n) > 0 && parseInt(n) <= 30;
 }
 
 // parses the x-y id format in to an array with two parts (first is col second is row)

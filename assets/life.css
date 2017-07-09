@@ -5,8 +5,9 @@
     margin-right: 8px;
 }
 
-#rules {
-    vertical-align: bottom;
+.container {
+    overflow-x: scroll;
+    overflow-y: scroll;
 }
 
 .flex {
