@@ -9,7 +9,8 @@ Rules that determine if a cell lives or dies in the next generation are:
 
 1. **underpopulation** - Any live cell with fewer than two live neighbors dies
 2. **overpopulation** - Any live cell with more than three live neighbors dies
-3. **reproduction** - Any dead cell with exactly three live neighbors becomes a live cell
-4. **stabilization** - Any live cell with two or three live neighbors lives on to the next generation
+3. **stabilization** - Any live cell with two or three live neighbors lives on to the next generation
+4. **reproduction** - Any dead cell with exactly three live neighbors becomes a live cell
+
 
 Committed the bundle so this will work with github pages hosting.

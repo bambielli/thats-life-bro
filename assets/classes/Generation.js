@@ -49,7 +49,7 @@ Generation.prototype.next = function () {
     this.state.forEach((row) => {
         row.forEach((coord) => {
             const livingCoords = this.findSurroundingLivingCoordinates(coord);
-            if (livingCoords.length < 2 || livingCoords.length > 3) { // underpopulation
+            if (livingCoords.length < 2 || livingCoords.length > 3) { // underpopulation || overpopulation
                 if (coord.isAlive !== false) {
                     diff.push(nextGen[coord.y][coord.x]);
                 }
